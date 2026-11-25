@@ -1,0 +1,23 @@
+# 가짜 LLM 시험용 mandate: AI 투자자 에이전트 3명과 PEAD를 함께 사용.
+schema_version: 2
+name: demo-agents
+strategies:
+  - name: deep-value
+    blend: {mode: long_only}
+    weight: 0.6
+    models:
+      - name: graham
+        weight: 2.0
+      - name: buffett
+      - name: munger
+  - name: earnings-drift
+    blend: {mode: long_short}
+    weight: 0.4
+    models:
+      - name: pead
+risk:
+  max_position_pct: 0.4
+  max_gross_exposure: 1.0
+capital: 100000
+rebalance: monthly        # 에이전트는 호출이 비싸니 월간부터
+benchmark: SPY
