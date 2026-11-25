@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "extraKnownMarketplaces": {
+    "thedotmack": { "source": { "source": "github", "repo": "thedotmack/claude-mem" } },
+    "claude-hud": { "source": { "source": "github", "repo": "jarrodwatts/claude-hud" } },
+    "ecc": { "source": { "source": "github", "repo": "affaan-m/everything-claude-code" } }
+  },
+  "enabledPlugins": {
+    "claude-mem@thedotmack": true,
+    "claude-hud@claude-hud": true,
+    "ecc@ecc": true
+  }
+}
