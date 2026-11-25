@@ -44,7 +44,7 @@ def test_pe_reference_price_is_derived_not_invented():
     assert "price_at_pe_threshold" not in cl.pe_reference_price(100.0, -3.0, crit)
 
 
-def test_prompt_demands_analyst_note_and_estimate_labels():
+def test_prompt_demands_short_entry_exit_estimates():
     p = system_prompt()
-    for must in ("투자의견(추정)", "시나리오(추정)", "기준 가격대", "🎩 **워런버핏**", "목표주가가 아니라"):
+    for must in ("의견(추정)", "들어갈 조건(추정)", "멈출 조건(추정)", "🎩 **워런버핏**", "목표주가가 아니라"):
         assert must in p
