@@ -56,6 +56,21 @@ def evaluate(metrics: dict[str, float | None], criteria: list[dict[str, Any]]) -
     return rows
 
 
+def pe_reference_price(price: float | None, pe: float | None, criteria: list[dict[str, Any]]) -> dict[str, Any]:
+    """점검표의 PER 기준선에서 역산한 가격대. 목표주가가 아니라 '이 가격 이하면 PER 기준을 통과한다'는 계산이다."""
+    rule = next((c for c in criteria if c["metric"] == "pe_ratio"), None)
+    if not rule or not price or not pe or pe <= 0:
+        return {"price": price, "note": "후행 PER이 없거나 0 이하라 계산하지 못했습니다."}
+    eps = price / pe  # 후행 주당순이익(근사)
+    return {
+        "price": price,
+        "trailing_eps": round(eps, 2),
+        "pe_threshold": rule["threshold"],
+        "price_at_pe_threshold": round(eps * rule["threshold"], 2),
+        "note": "목표주가가 아닙니다. 후행 이익이 그대로일 때 PER 기준선(프로젝트 기본값)을 통과하는 가격입니다.",
+    }
+
+
 def summarize(rows: list[dict[str, Any]]) -> dict[str, int]:
     out = {"통과": 0, "미달": 0, "확인 불가": 0}
     for r in rows:

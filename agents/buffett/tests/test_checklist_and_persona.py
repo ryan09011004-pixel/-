@@ -33,3 +33,18 @@ def test_tools_wiring():
     assert "[Q" in search_quotes_impl("moat")
     assert "인용 없이" in search_quotes_impl("비트코인 폭등")
     assert "Greg Abel" in known_facts_impl() and "2025" in known_facts_impl()
+
+
+def test_pe_reference_price_is_derived_not_invented():
+    crit = cl.load_criteria()
+    ref = cl.pe_reference_price(100.0, 20.0, crit)
+    assert ref["trailing_eps"] == 5.0 and ref["price_at_pe_threshold"] == 125.0  # 5 x PER 기준 25
+    assert "목표주가가 아닙니다" in ref["note"]
+    assert "price_at_pe_threshold" not in cl.pe_reference_price(100.0, None, crit)
+    assert "price_at_pe_threshold" not in cl.pe_reference_price(100.0, -3.0, crit)
+
+
+def test_prompt_demands_analyst_note_and_estimate_labels():
+    p = system_prompt()
+    for must in ("투자의견(추정)", "시나리오(추정)", "기준 가격대", "🎩 **워런버핏**", "목표주가가 아니라"):
+        assert must in p

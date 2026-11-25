@@ -47,8 +47,11 @@ def checklist_impl(ticker: str) -> dict[str, Any]:
     except Exception:
         income = []
     metrics = cl.metrics_from_yfinance(info, income)
-    rows = cl.evaluate(metrics, cl.load_criteria())
+    criteria = cl.load_criteria()
+    rows = cl.evaluate(metrics, criteria)
+    reference = cl.pe_reference_price(info.get("currentPrice") or info.get("regularMarketPrice"), info.get("trailingPE"), criteria)
     return {
+        "reference": reference,
         "ticker": ticker,
         "name": info.get("shortName"),
         "sector": info.get("sector"),
