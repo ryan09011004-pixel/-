@@ -8,7 +8,7 @@ from buffett_agent import quotes as qs
 
 def test_quotes_load_and_ids_unique():
     qq = qs.load_quotes()
-    assert len(qq) >= 40
+    assert len(qq) >= 45
     ids = [q.id for q in qq]
     assert len(ids) == len(set(ids))
     assert all(re.fullmatch(r"Q\d{2}", i) for i in ids)

@@ -94,7 +94,7 @@ async def chat(*, model: str | None = DEFAULT_MODEL, show_tools: bool = False, a
             if not text:
                 continue
             await client.query(text)
-            print("버핏> ", end="", flush=True)
+            print("🎩 워런버핏> ", end="", flush=True)
             async for msg in client.receive_response():
                 for chunk in _chunks(msg, show_tools):
                     print(chunk, end="", flush=True)

@@ -6,7 +6,7 @@
 ```
 persona/
   system_prompt.md   페르소나 정체성, 말투, 인용·사실 규칙, 분석 절차
-  quotes.jsonl       원문과 대조해 검증한 인용 40개 (ID, 주제, 연도, 원문 URL, 영어 원문, 한국어 번역)
+  quotes.jsonl       원문과 대조해 검증한 인용 45개 (ID, 주제, 연도, 원문 URL, 영어 원문, 한국어 번역)
                      주주서한 1977~2024 29개 + 버핏 본인 명의 공식 메시지 2025-11, 2026-09, 2026-11 11개
   facts.md           알려진 사실과 출처 유형, 아직 수집하지 못한 자료
   checklist.yaml     버핏 스타일 점검표 기준값(프로젝트가 정한 기본값)
@@ -34,7 +34,7 @@ Claude Agent SDK는 Claude Code의 인증을 그대로 씁니다. 호출마다 �
 ## 인용 검증
 ```bash
 python scripts/fetch_letters.py     # 서한과 공식 메시지를 corpus/에 내려받음 (www.berkshirehathaway.com 접근 필요, 무료)
-python scripts/verify_quotes.py     # 40/40 일치해야 함
+python scripts/verify_quotes.py     # 45/45 일치해야 함
 pytest -q
 ```
 새 인용을 추가할 때는 `quotes.jsonl`에 한 줄을 넣고 위 검증을 통과시킵니다. 통과하지 못한 문장은 넣지 않습니다.
