@@ -1,0 +1,44 @@
+# 버핏 스타일 점검표. 기준값은 버핏이 정한 숫자가 아니라, 그의 원칙을 숫자로 옮기려고
+# 이 프로젝트가 임의로 정한 보수적 기본값이다. 바꿔 쓰는 것을 전제로 한다.
+version: 1
+criteria:
+  - id: roe
+    label: 자기자본이익률(ROE)이 높은가
+    source_theme: returns_on_equity
+    metric: roe_pct
+    op: ">="
+    threshold: 15
+  - id: debt
+    label: 부채가 과하지 않은가 (부채/자기자본 %)
+    source_theme: returns_on_equity
+    metric: debt_to_equity_pct
+    op: "<="
+    threshold: 100
+  - id: op_margin
+    label: 영업이익률이 높은가 (해자 흔적)
+    source_theme: moat
+    metric: operating_margin_pct
+    op: ">="
+    threshold: 15
+  - id: earnings_consistency
+    label: 최근 연간 순이익이 모두 흑자인가
+    source_theme: margin_of_safety
+    metric: profit_years_positive_ratio
+    op: ">="
+    threshold: 1.0
+  - id: fcf
+    label: 잉여현금흐름이 플러스인가
+    source_theme: returns_on_equity
+    metric: free_cashflow
+    op: ">"
+    threshold: 0
+  - id: price
+    label: 후행 PER이 지나치게 높지 않은가 (안전마진 점검)
+    source_theme: margin_of_safety
+    metric: pe_ratio
+    op: "<="
+    threshold: 25
+notes:
+  - 값이 없으면 통과도 실패도 아닌 '확인 불가'로 표시한다.
+  - 이 점검은 결론이 아니라 질문거리다. 해자, 경영진, 사업의 이해 가능성은 숫자로 판정하지 않는다.
+  - 금융·보험 업종은 부채·영업이익률 기준이 맞지 않아 참고용으로만 본다.
