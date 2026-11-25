@@ -15,6 +15,13 @@ import urllib.request
 from pathlib import Path
 
 BASE = "https://www.berkshirehathaway.com/letters/"
+NEWS_BASE = "https://www.berkshirehathaway.com/news/"
+# 버핏 본인 명의 글이 담긴 보도자료: 코퍼스 문서 이름 -> PDF 파일
+NEWS = {
+    "news-2025-11-10": "nov1025.pdf",  # 추수감사절 메시지 ("going quiet")
+    "news-2026-09-18": "sep1826.pdf",  # 명예 회장 취임 서한
+    "news-2026-11-16": "nov1626.pdf",  # 추수감사절 메시지
+}
 
 
 def letter_name(year: int) -> str:
@@ -45,6 +52,18 @@ def main() -> int:
     (out / "raw").mkdir(parents=True, exist_ok=True)
     (out / "txt").mkdir(parents=True, exist_ok=True)
     failed = []
+    for doc, pdf in NEWS.items():
+        txt = out / "txt" / f"{doc}.txt"
+        if txt.exists():
+            continue
+        try:
+            raw = out / "raw" / pdf
+            fetch(NEWS_BASE + pdf, raw)
+            subprocess.run(["pdftotext", "-layout", str(raw), str(txt)], check=True)
+            print("ok", doc)
+        except Exception as e:
+            failed.append((doc, str(e)))
+            print("FAIL", doc, e, file=sys.stderr)
     for y in range(a.y0, a.y1 + 1):
         name = letter_name(y)
         raw = out / "raw" / name

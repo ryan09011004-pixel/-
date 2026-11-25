@@ -18,6 +18,7 @@ class Quote:
     url: str
     text: str
     ko: str
+    doc: str = ""  # 보도자료 등 연도만으로 원문 파일을 정할 수 없을 때의 코퍼스 문서 이름
 
     def render(self) -> str:
         return f'[{self.id}] "{self.text}" ({self.source})\n  번역: {self.ko}\n  원문: {self.url}'
@@ -33,7 +34,7 @@ def load_quotes(path: Path | None = None) -> list[Quote]:
         missing = [f for f in REQUIRED_FIELDS if f not in row]
         if missing:
             raise ValueError(f"{path.name}:{n} 필드 누락: {missing}")
-        quotes.append(Quote(**{f: row[f] for f in REQUIRED_FIELDS}))
+        quotes.append(Quote(**{f: row[f] for f in REQUIRED_FIELDS}, doc=row.get("doc", "")))
     return quotes
 
 

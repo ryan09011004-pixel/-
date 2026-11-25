@@ -8,7 +8,7 @@ from buffett_agent import quotes as qs
 
 def test_quotes_load_and_ids_unique():
     qq = qs.load_quotes()
-    assert len(qq) >= 25
+    assert len(qq) >= 40
     ids = [q.id for q in qq]
     assert len(ids) == len(set(ids))
     assert all(re.fullmatch(r"Q\d{2}", i) for i in ids)
@@ -16,9 +16,12 @@ def test_quotes_load_and_ids_unique():
 
 def test_every_quote_has_primary_source_and_translation():
     for q in qs.load_quotes():
-        assert q.url.startswith("https://www.berkshirehathaway.com/letters/")
-        assert 1977 <= q.year <= 2024  # 2025년분은 에이블이 쓴 서한이라 버핏 인용에 쓰지 않는다
+        assert q.url.startswith("https://www.berkshirehathaway.com/")
         assert q.text.strip() and q.ko.strip()
+        if q.doc:  # 보도자료: 버핏 본인 명의의 글만(2025-11 이후 추수감사절 메시지 등)
+            assert q.doc.startswith("news-") and q.year >= 2025 and "/news/" in q.url
+        else:  # 주주서한: 2025년분은 에이블이 쓴 서한이라 버핏 인용에 쓰지 않는다
+            assert 1977 <= q.year <= 2024 and "/letters/" in q.url
 
 
 def test_search_by_theme_and_keyword():

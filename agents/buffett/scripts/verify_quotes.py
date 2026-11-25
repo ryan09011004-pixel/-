@@ -30,11 +30,12 @@ def load_quotes(path: Path):
 def verify(quotes, corpus: Path):
     cache, bad = {}, []
     for q in quotes:
-        f = corpus / f"{q['year']}.txt"
+        doc = q.get("doc") or str(q["year"])  # 주주서한은 연도, 보도자료는 doc 이름(news-YYYY-MM-DD)
+        f = corpus / f"{doc}.txt"
         if not f.exists():
             bad.append((q["id"], "원문 파일 없음"))
             continue
-        text = cache.setdefault(q["year"], norm(f.read_text(encoding="utf-8", errors="ignore")))
+        text = cache.setdefault(doc, norm(f.read_text(encoding="utf-8", errors="ignore")))
         if norm(q["text"]) not in text:
             bad.append((q["id"], "원문에서 찾지 못함"))
     return bad
