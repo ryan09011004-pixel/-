@@ -1,0 +1,15 @@
+# 가짜 데이터 시험용 mandate: AI 호출 없는 PEAD(실적 발표 후 방향 추종) 하나만 사용.
+schema_version: 2
+name: demo-pead
+strategies:
+  - name: earnings-drift
+    blend: {mode: long_short}
+    weight: 1.0
+    models:
+      - name: pead
+risk:
+  max_position_pct: 0.4
+  max_gross_exposure: 1.0
+capital: 100000
+rebalance: daily        # daily | weekly | monthly
+benchmark: SPY
