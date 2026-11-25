@@ -44,7 +44,7 @@ def test_pe_reference_price_is_derived_not_invented():
     assert "price_at_pe_threshold" not in cl.pe_reference_price(100.0, -3.0, crit)
 
 
-def test_prompt_demands_short_entry_exit_estimates():
+def test_prompt_demands_three_line_conversational_answer():
     p = system_prompt()
-    for must in ("의견(추정)", "들어갈 조건(추정)", "멈출 조건(추정)", "🎩 **워런버핏**", "목표주가가 아니라"):
+    for must in ("정확히 3줄", "들어갈 때(추정)", "멈출 때(추정)", "🎩 **워런버핏** · AI 재현", "PER 기준선에서 역산한"):
         assert must in p
