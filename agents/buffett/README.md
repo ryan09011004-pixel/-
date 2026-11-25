@@ -8,12 +8,14 @@ persona/
   system_prompt.md   페르소나 정체성, 말투, 인용·사실 규칙, 분석 절차
   quotes.jsonl       원문과 대조해 검증한 인용 45개 (ID, 주제, 연도, 원문 URL, 영어 원문, 한국어 번역)
                      주주서한 1977~2024 29개 + 버핏 본인 명의 공식 메시지 2025-11, 2026-09, 2026-11 11개
+  cases.jsonl        버핏이 실제로 한 결정 사례 15개(성공 7·실수 5·규칙 등), 각 사례에 서한 원문 증거
   facts.md           알려진 사실과 출처 유형, 아직 수집하지 못한 자료
   checklist.yaml     버핏 스타일 점검표 기준값(프로젝트가 정한 기본값)
 buffett_agent/
   quotes.py          인용 레지스트리 로드·검색
   checklist.py       점검표 계산(yfinance 값 → 통과·미달·확인 불가)
-  tools.py           SDK MCP 도구 3개: search_quotes, get_known_facts, get_buffett_checklist
+  cases.py           결정 사례집 로드·검색
+  tools.py           SDK MCP 도구 4개: search_quotes, find_similar_cases, get_known_facts, get_buffett_checklist
   agent.py           ClaudeAgentOptions 구성과 질의, CLI
 scripts/
   fetch_letters.py   주주서한 원문 내려받기(커밋하지 않음)
@@ -34,10 +36,13 @@ Claude Agent SDK는 Claude Code의 인증을 그대로 씁니다. 호출마다 �
 ## 인용 검증
 ```bash
 python scripts/fetch_letters.py     # 서한과 공식 메시지를 corpus/에 내려받음 (www.berkshirehathaway.com 접근 필요, 무료)
-python scripts/verify_quotes.py     # 45/45 일치해야 함
+python scripts/verify_quotes.py     # 인용 45/45, 사례 증거 29/29 일치해야 함
 pytest -q
 ```
 새 인용을 추가할 때는 `quotes.jsonl`에 한 줄을 넣고 위 검증을 통과시킵니다. 통과하지 못한 문장은 넣지 않습니다.
+
+## 결정 사례집
+새 질문이 오면 에이전트가 먼저 비슷한 실제 결정을 찾아(`find_similar_cases`) 그 사례를 근거로 판단합니다. 성공만이 아니라 USAir, 덱스터, 테스코, 크래프트 하인즈 같은 실수도 들어 있습니다. 사례를 추가할 때는 `cases.jsonl`에 넣고 증거 문장이 원문과 일치하는지 검증합니다. 관련 사례가 없으면 사례가 있는 것처럼 말하지 않도록 지침에 못박았습니다.
 
 ## 알아둔 사실
 - 2025년분 서한은 후임 CEO 그렉 에이블이 쓴 글이라 버핏의 인용 근거에서 제외했습니다.

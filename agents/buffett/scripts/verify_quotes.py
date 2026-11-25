@@ -41,17 +41,36 @@ def verify(quotes, corpus: Path):
     return bad
 
 
+def verify_cases(cases, corpus: Path):
+    """사례집(cases.jsonl)의 증거 문장이 해당 연도 서한 원문에 그대로 있는지 확인한다."""
+    rows = []
+    for c in cases:
+        for i, ev in enumerate(c.get("evidence", []), 1):
+            rows.append({"id": f"{c['id']}#{i}", "year": ev["year"], "text": ev["text"], "doc": ev.get("doc", "")})
+    return len(rows), verify(rows, corpus)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", default=str(ROOT / "corpus" / "txt"))
     ap.add_argument("--quotes", default=str(ROOT / "persona" / "quotes.jsonl"))
+    ap.add_argument("--cases", default=str(ROOT / "persona" / "cases.jsonl"))
     a = ap.parse_args()
     quotes = load_quotes(Path(a.quotes))
     bad = verify(quotes, Path(a.corpus))
     for qid, why in bad:
         print("FAIL", qid, why)
     print(f"{len(quotes) - len(bad)}/{len(quotes)} 인용이 원문과 일치")
-    return 1 if bad else 0
+    failed = bool(bad)
+    cases_path = Path(a.cases)
+    if cases_path.exists():
+        cases = load_quotes(cases_path)  # 같은 jsonl 형식
+        total, cbad = verify_cases(cases, Path(a.corpus))
+        for cid, why in cbad:
+            print("FAIL", cid, why)
+        print(f"{total - len(cbad)}/{total} 사례 증거가 원문과 일치")
+        failed = failed or bool(cbad)
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

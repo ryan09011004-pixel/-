@@ -1,6 +1,6 @@
 from buffett_agent import checklist as cl
 from buffett_agent.agent import system_prompt
-from buffett_agent.tools import TOOL_NAMES, known_facts_impl, search_quotes_impl
+from buffett_agent.tools import TOOL_NAMES, find_similar_cases_impl, known_facts_impl, search_quotes_impl
 
 
 def test_metrics_units_are_normalized():
@@ -29,7 +29,8 @@ def test_system_prompt_has_guardrails():
 
 
 def test_tools_wiring():
-    assert TOOL_NAMES == ["mcp__buffett__search_quotes", "mcp__buffett__get_known_facts", "mcp__buffett__get_buffett_checklist"]
+    assert TOOL_NAMES == ["mcp__buffett__search_quotes", "mcp__buffett__find_similar_cases", "mcp__buffett__get_known_facts", "mcp__buffett__get_buffett_checklist"]
+    assert "[C13]" in find_similar_cases_impl("애플 기술주") and "사례가 있는 것처럼" in find_similar_cases_impl("zzzz qqqq")
     assert "[Q" in search_quotes_impl("moat")
     assert "인용 없이" in search_quotes_impl("비트코인 폭등")
     assert "Greg Abel" in known_facts_impl() and "2025" in known_facts_impl()

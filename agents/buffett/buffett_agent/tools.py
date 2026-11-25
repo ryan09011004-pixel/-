@@ -9,11 +9,12 @@ from typing import Any
 
 from claude_agent_sdk import create_sdk_mcp_server, tool
 
+from . import cases as cs
 from . import checklist as cl
 from . import quotes as qs
 
 SERVER_NAME = "buffett"
-TOOL_NAMES = [f"mcp__{SERVER_NAME}__{n}" for n in ("search_quotes", "get_known_facts", "get_buffett_checklist")]
+TOOL_NAMES = [f"mcp__{SERVER_NAME}__{n}" for n in ("search_quotes", "find_similar_cases", "get_known_facts", "get_buffett_checklist")]
 
 
 def _text(payload: Any, is_error: bool = False) -> dict[str, Any]:
@@ -30,6 +31,13 @@ def search_quotes_impl(query: str, limit: int = 6) -> str:
     if not found:
         return f"'{query}'에 맞는 검증된 인용이 없습니다. 가능한 주제: {', '.join(qs.themes(quotes))}. 인용 없이 '원칙 적용 추정'으로 답하세요."
     return "\n\n".join(q.render() for q in found)
+
+
+def find_similar_cases_impl(query: str, limit: int = 3) -> str:
+    found = cs.search(cs.load_cases(), query, limit)
+    if not found:
+        return f"'{query}'와 비슷한 실제 결정 사례가 없습니다. 사례 없이 '원칙 적용 추정'으로만 답하고, 사례가 있는 것처럼 말하지 마세요."
+    return "\n\n".join(c.render() for c in found)
 
 
 def known_facts_impl() -> str:
@@ -66,6 +74,11 @@ async def search_quotes(args: dict[str, Any]) -> dict[str, Any]:
     return _text(search_quotes_impl(args["query"]))
 
 
+@tool("find_similar_cases", "버핏이 실제로 한 결정 사례(성공과 실수) 중 질문과 비슷한 것을 찾는다. 사례를 쓸 때는 [C07]처럼 ID를 붙인다.", {"query": str})
+async def find_similar_cases(args: dict[str, Any]) -> dict[str, Any]:
+    return _text(find_similar_cases_impl(args["query"]))
+
+
 @tool("get_known_facts", "버핏과 버크셔에 대해 확인된 사실과 출처 유형, 아직 수집하지 못한 자료를 돌려준다.", {})
 async def get_known_facts(args: dict[str, Any]) -> dict[str, Any]:
     return _text(known_facts_impl())
@@ -80,4 +93,4 @@ async def get_buffett_checklist(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_server():
-    return create_sdk_mcp_server(name=SERVER_NAME, version="0.1.0", tools=[search_quotes, get_known_facts, get_buffett_checklist])
+    return create_sdk_mcp_server(name=SERVER_NAME, version="0.1.0", tools=[search_quotes, find_similar_cases, get_known_facts, get_buffett_checklist])
