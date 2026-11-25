@@ -1,0 +1,49 @@
+# 그레이엄 방어적 투자자 점검표. 기준값은 『현명한 투자자』 14장에 알려진 수치를 따르려는
+# 프로젝트 기본값이며 원서로 확인된 것이 아니다. 데이터(무료 Yahoo Finance)가 4년치뿐이라
+# '10년 연속' 같은 기준은 가능한 연수만 본다. 값이 없으면 '확인 불가'로 둔다.
+version: 1
+criteria:
+  - id: size
+    label: 충분한 규모(연 매출, 달러)
+    metric: revenue_usd
+    op: ">="
+    threshold: 500000000
+  - id: current_ratio
+    label: 유동비율(1년 안에 갚을 돈 대비 1년 안에 현금이 될 자산)
+    metric: current_ratio
+    op: ">="
+    threshold: 2
+  - id: debt_vs_working_capital
+    label: 장기 부채가 순운전자본 이하인가(배율)
+    metric: ltdebt_to_working_capital
+    op: "<="
+    threshold: 1
+  - id: earnings_stability
+    label: 확인 가능한 연도에 모두 흑자인가
+    metric: profit_years_positive_ratio
+    op: ">="
+    threshold: 1.0
+  - id: dividends
+    label: 확인 가능한 연도에 계속 배당했는가
+    metric: dividend_years_ratio
+    op: ">="
+    threshold: 1.0
+  - id: per
+    label: 최근 연평균 이익 기준 PER이 15 이하인가
+    metric: per_avg_earnings
+    op: "<="
+    threshold: 15
+  - id: pbr
+    label: 주가순자산비율(PBR)이 1.5 이하인가
+    metric: pbr
+    op: "<="
+    threshold: 1.5
+  - id: per_x_pbr
+    label: PER × PBR이 22.5 이하인가
+    metric: per_x_pbr
+    op: "<="
+    threshold: 22.5
+notes:
+  - 이 점검은 결론이 아니라 질문거리다. 사업의 질은 숫자 7개로 판정하지 않는다.
+  - 그레이엄 수와 순유동자산 기준(NCAV)은 별도로 계산해 reference에 담는다. 목표주가가 아니다.
+  - 금융·보험 업종은 유동비율·운전자본 기준이 맞지 않아 참고용으로만 본다.
