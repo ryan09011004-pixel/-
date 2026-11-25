@@ -1,0 +1,1 @@
+출처: https://github.com/tradermonty/claude-trading-skills (MIT). 키가 필요 없는 스킬 38개만 공식 .skill 패키지에서 풀어 둠. 유료·키 필요 스킬은 비용 규칙에 따라 제외.
