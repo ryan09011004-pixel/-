@@ -27,6 +27,7 @@ cd agents/buffett
 uv venv && uv pip install -e ".[dev]"
 python -m buffett_agent "엔비디아를 어떻게 보세요?"
 python -m buffett_agent --show-tools "시장이 폭락할 것 같은데 팔아야 할까요?"
+python -m buffett_agent --chat        # 여러 턴 대화. 시작할 때 비용 안내를 보여 주고 확인을 받음
 ```
 Claude Agent SDK는 Claude Code의 인증을 그대로 씁니다. 호출마다 비용이 들며, `--show-tools`를 주면 끝에 비용이 출력됩니다.
 
