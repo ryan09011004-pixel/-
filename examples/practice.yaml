@@ -1,0 +1,20 @@
+# 무료 연습용 mandate: 가격만 쓰는 직접 만든 모델 두 개 (practice_demo.py가 등록).
+schema_version: 2
+name: practice
+strategies:
+  - name: trend-follow
+    blend: {mode: long_only}
+    weight: 0.5
+    models:
+      - name: trend
+  - name: momentum-ls
+    blend: {mode: long_short}
+    weight: 0.5
+    models:
+      - name: momentum
+risk:
+  max_position_pct: 0.4
+  max_gross_exposure: 1.0
+capital: 100000
+rebalance: weekly
+benchmark: SPY
