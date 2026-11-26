@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from .aliases import STOPWORDS, expand
 from .quotes import PERSONA_DIR
 
 REQUIRED_FIELDS = ("id", "title", "kind", "period", "situation", "decision", "reason", "lesson", "tags", "keywords", "evidence", "sources")
@@ -51,12 +52,12 @@ def load_cases(path: Path | None = None) -> list[Case]:
 
 
 def _words(text: str) -> list[str]:
-    return [w for w in re.split(r"[\s,]+", text.lower()) if len(w) >= 2]
+    return [w for w in re.split(r"[\s,]+", text.lower()) if len(w) >= 2 and w not in STOPWORDS]
 
 
 def search(cases: list[Case], query: str, limit: int = 3) -> list[Case]:
     """질문 속 단어가 태그·키워드·제목·상황·교훈에 많이 겹치는 사례를 고른다. 겹침이 없으면 빈 목록."""
-    q = _words(query)
+    q = _words(expand(query))
     if not q:
         return []
     scored = []

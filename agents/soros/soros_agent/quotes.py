@@ -5,6 +5,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from .aliases import expand
+
 PERSONA_DIR = Path(__file__).resolve().parents[1] / "persona"
 REQUIRED_FIELDS = ("id", "theme", "year", "source", "url", "text", "ko")
 
@@ -50,7 +52,7 @@ def search(quotes: list[Quote], query: str, limit: int = 6) -> list[Quote]:
     by_theme = [x for x in quotes if x.theme == q]
     if by_theme:
         return by_theme[:limit]
-    words = [w for w in q.replace(",", " ").split() if w]
+    words = [w for w in expand(q).replace(",", " ").split() if w]
     scored = []
     for x in quotes:
         hay = f"{x.theme} {x.text} {x.ko}".lower()
