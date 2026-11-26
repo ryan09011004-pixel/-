@@ -1,0 +1,40 @@
+# 소로스 스타일 점검표: 가격이 추세에서 얼마나 멀어졌고 되먹임이 과열 신호를 보이는지 묻는 질문 모음.
+# 기준값은 소로스가 정한 숫자가 아니라 이 프로젝트의 기본값이다. 무료 데이터(Yahoo Finance) 최근 약 3년 일별 종가 기준.
+# 붐-버스트 단계 판정은 가설이며 확정이 아니다. 값이 없으면 '확인 불가'로 둔다.
+version: 1
+criteria:
+  - id: extension_200d
+    label: 가격이 200일 이동평균보다 얼마나 위에 있는가(%)
+    metric: ext_vs_200d_pct
+    op: "<="
+    threshold: 40
+  - id: run_up_12m
+    label: 최근 12개월 상승률 %
+    metric: ret_12m_pct
+    op: "<="
+    threshold: 100
+  - id: acceleration
+    label: 최근 3개월 상승이 직전 9개월보다 얼마나 가파른가(분기 환산 %p 차이)
+    metric: acceleration_pp
+    op: "<="
+    threshold: 25
+  - id: vol_regime
+    label: 최근 3개월 변동성이 3년 평균의 몇 배인가(배)
+    metric: vol_ratio
+    op: "<="
+    threshold: 1.5
+  - id: drawdown_now
+    label: 3년 고점 대비 현재 낙폭 %(0에 가까울수록 좋음)
+    metric: drawdown_from_peak_pct
+    op: ">="
+    threshold: -20
+  - id: downside_asymmetry
+    label: 하락일 평균 낙폭 ÷ 상승일 평균 상승폭(배, 급락 비대칭)
+    metric: downside_asymmetry
+    op: "<="
+    threshold: 1.15
+notes:
+  - 이 점검은 결론이 아니라 질문거리다. 오해(misconception)가 무엇인지는 숫자로 판정할 수 없다.
+  - 단계 판정(초기·가속·시험·황혼 의심·붕괴 의심·판정 불가)은 위 숫자로 만든 대략적 가설이다.
+  - 참고 기준선은 50일·200일 이동평균과 3년 고점·저점이며 목표 주가가 아니다.
+  - 이 도구는 지수·ETF·개별 종목 모두 같은 방식으로 계산한다. 실적·신용 같은 기초 여건은 보지 않는다.
