@@ -1,0 +1,39 @@
+# 린치 스타일 점검표. 기준값은 린치의 책과 2차 자료에서 알려진 통념을 따르려는 프로젝트 기본값이며
+# 원서로 확인된 것이 아니다. 무료 데이터(Yahoo Finance)가 최근 약 4년치뿐이라 성장률은 가능한 연수로 계산한다.
+# 값이 없으면 '확인 불가'로 둔다.
+version: 1
+criteria:
+  - id: peg
+    label: PEG(PER ÷ 이익 성장률)가 1 이하인가
+    metric: peg
+    op: "<="
+    threshold: 1.0
+  - id: debt
+    label: 빚이 적은가(부채/자기자본 %)
+    metric: debt_to_equity_pct
+    op: "<="
+    threshold: 50
+  - id: net_cash
+    label: 현금이 빚보다 많은가(순현금/시가총액 %)
+    metric: net_cash_to_price_pct
+    op: ">="
+    threshold: 0
+  - id: inventory
+    label: 재고가 매출보다 빨리 늘지 않는가(재고 증가율 - 매출 증가율, %p)
+    metric: inventory_minus_sales_growth
+    op: "<="
+    threshold: 0
+  - id: institutions
+    label: 기관 보유 비율이 지나치게 높지 않은가(%)
+    metric: institutional_ownership_pct
+    op: "<="
+    threshold: 60
+  - id: earnings_up
+    label: 확인 가능한 연도마다 주당순이익이 늘었는가(비율)
+    metric: eps_years_up_ratio
+    op: ">="
+    threshold: 1.0
+notes:
+  - 이 점검은 결론이 아니라 질문거리다. 회사 이야기를 아는지는 숫자로 판정하지 않는다.
+  - 분류(저성장·우량·고성장·경기순환·회생·자산주)는 업종과 숫자로 만든 대략적 추정이다.
+  - 금융업은 부채·재고 기준이 맞지 않아 참고용으로만 본다.
