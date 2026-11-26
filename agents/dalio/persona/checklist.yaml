@@ -1,0 +1,39 @@
+# 달리오 스타일 점검표. 종목 하나가 아니라 포트폴리오(또는 자산 하나)가 어떤 환경에 치우쳤는지 본다.
+# 기준값은 달리오가 정한 숫자가 아니라 이 프로젝트의 기본값이다. 무료 데이터(Yahoo Finance) 3년 일별 수익률 기준.
+# 값이 없으면 '확인 불가'로 둔다.
+version: 1
+criteria:
+  - id: risk_concentration
+    label: 한 자산이 포트폴리오 위험의 얼마를 차지하는가(최대 위험 기여도 %)
+    metric: max_risk_contribution_pct
+    op: "<="
+    threshold: 40
+  - id: diversification
+    label: 자산들이 같이 움직이는 정도(평균 상관계수)
+    metric: avg_pairwise_correlation
+    op: "<="
+    threshold: 0.5
+  - id: breadth
+    label: 서로 다른 자산이 충분히 많은가(개수)
+    metric: asset_count
+    op: ">="
+    threshold: 4
+  - id: inflation_hedge
+    label: 물가 상승에 대비한 자산(금·물가연동채·원자재) 비중 %
+    metric: inflation_hedge_weight_pct
+    op: ">="
+    threshold: 10
+  - id: growth_hedge
+    label: 성장 둔화에 대비한 자산(채권) 비중 %
+    metric: bond_weight_pct
+    op: ">="
+    threshold: 10
+  - id: drawdown
+    label: 3년 중 최대 낙폭 %(0에 가까울수록 좋음)
+    metric: max_drawdown_pct
+    op: ">="
+    threshold: -30
+notes:
+  - 이 점검은 결론이 아니라 질문거리다. 올웨더의 실제 자산 비중은 달리오의 글에 숫자로 나오지 않았다.
+  - 개별 종목 하나만 넣으면 위험 집중이 100%로 나온다. 그 종목이 어떤 환경과 같이 움직이는지(SPY·TLT·GLD 대비 상관)를 함께 보여 준다.
+  - 환경 분류는 대표 ETF 이름 기준의 단순 규칙이다(주식형, 채권형, 금·물가연동·원자재형, 그 밖은 주식으로 간주).
