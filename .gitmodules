@@ -1,0 +1,15 @@
+[submodule "tools/Controllable-RAG-Agent"]
+	path = tools/Controllable-RAG-Agent
+	url = https://github.com/NirDiamant/Controllable-RAG-Agent.git
+[submodule "tools/question_generation"]
+	path = tools/question_generation
+	url = https://github.com/patil-suraj/question_generation.git
+[submodule "tools/Questgen.ai"]
+	path = tools/Questgen.ai
+	url = https://github.com/ramsrigouthamg/Questgen.ai.git
+[submodule "tools/AnkiAIUtils"]
+	path = tools/AnkiAIUtils
+	url = https://github.com/thiswillbeyourgithub/AnkiAIUtils.git
+[submodule "tools/deep-student"]
+	path = tools/deep-student
+	url = https://github.com/helixnow/deep-student.git
