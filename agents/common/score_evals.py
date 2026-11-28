@@ -29,7 +29,7 @@ def score(agent: str, answers: dict[str, str]) -> list[dict]:
         if ans is None:
             rows.append({"id": q["id"], "kind": q["kind"], "result": "답변 없음", "problems": []})
             continue
-        problems = check_answer(agent, ans)
+        problems = check_answer(agent, ans, 1 if q["kind"] == "out_of_scope" else 3)
         problems += [f"필수 문구 없음: {s}" for s in q.get("must_include", []) if s not in ans]
         problems += [f"금지 문구 포함: {s}" for s in q.get("must_not_include", []) if s in ans]
         rows.append({"id": q["id"], "kind": q["kind"], "result": "통과" if not problems else "실패", "problems": problems})

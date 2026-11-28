@@ -31,8 +31,8 @@ def registry_ids(agent: str) -> set[str]:
     return ids
 
 
-def check_answer(agent: str, text: str) -> list[str]:
-    """문제 목록을 돌려준다. 빈 목록이면 형식 통과."""
+def check_answer(agent: str, text: str, body_lines: int = 3) -> list[str]:
+    """문제 목록을 돌려준다. 빈 목록이면 형식 통과. 범위 밖 질문은 body_lines=1(머리글 + 거절 한 줄)."""
     problems: list[str] = []
     lines = [l for l in text.strip().splitlines() if l.strip()]
     if not lines:
@@ -40,10 +40,10 @@ def check_answer(agent: str, text: str) -> list[str]:
     if lines[0].strip() != HEADERS[agent]:
         problems.append(f"첫 줄 머리글이 다릅니다(기대: {HEADERS[agent]})")
     body = lines[1:]
-    if len(body) != 3:
-        problems.append(f"본문이 {len(body)}줄입니다(정확히 3줄이어야 함)")
+    if len(body) != body_lines:
+        problems.append(f"본문이 {len(body)}줄입니다(정확히 {body_lines}줄이어야 함)")
     for i, l in enumerate(body, 1):
-        if "(추정)" not in l:
+        if body_lines == 3 and "(추정)" not in l:
             problems.append(f"{i}번째 줄에 '(추정)' 표시가 없습니다")
         if len(l) > MAX_LINE:
             problems.append(f"{i}번째 줄이 너무 깁니다({len(l)}자 > {MAX_LINE})")

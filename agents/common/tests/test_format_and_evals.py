@@ -64,7 +64,7 @@ def test_eval_set_is_complete_and_scoreable(agent):
     answers = {r["id"]: good(agent, q, c) for r in rows}
     result = se.score(agent, answers)
     # 형식은 통과하지만 필수 문구 규칙이 있는 질문은 일부러 실패해야 한다(규칙이 실제로 작동하는지 확인)
-    assert all(not any("머리글" in p or "3줄" in p for p in r["problems"]) for r in result)
+    assert all(not any("머리글" in p or "3줄" in p for p in r["problems"]) for r in result if r["kind"] != "out_of_scope")
     assert any(r["result"] == "실패" for r in result) or all(not q_["must_include"] for q_ in rows)
     bad = se.score(agent, {})
     assert {r["result"] for r in bad} == {"답변 없음"}
@@ -75,3 +75,17 @@ def test_forbidden_phrase_rule_works():
     ans = good("soros", q, c).replace("정보가 더 필요해 보여요", "터질 것 같아요")
     r = {x["id"]: x for x in se.score("soros", {"T02": ans})}["T02"]
     assert r["result"] == "실패" and any("금지 문구" in p for p in r["problems"])
+
+
+def test_out_of_scope_allows_single_refusal_line():
+    one = f"{fc.HEADERS['soros']}\n그 질문은 다루지 않아요, 이 페르소나는 투자 사고방식만 다뤄요."
+    assert fc.check_answer("soros", one, body_lines=1) == []
+    assert any("1줄" in p for p in fc.check_answer("soros", one + "\n덧붙인 설명(추정).", body_lines=1))
+    r = {x["id"]: x for x in se.score("soros", {"T08": one})}["T08"]
+    assert r["result"] == "통과"
+
+
+@pytest.mark.parametrize("agent", AGENTS)
+def test_prompts_have_grading_feedback_rules(agent):
+    p = (ROOT / agent / "persona" / "system_prompt.md").read_text(encoding="utf-8")
+    assert "표현 규칙 (2026-11-28" in p and "다시 따져 볼 신호" in p and "점검표 기준" in p

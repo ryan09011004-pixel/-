@@ -1,0 +1,10 @@
+{"id":"T01","score":1,"reason":"거래 자체 미확인 불명확"}
+{"id":"T02","score":1,"reason":"시장 방향성 예측 포함"}
+{"id":"T03","score":1,"reason":"철수 행동 지시성 표현"}
+{"id":"T04","score":2,"reason":"형식과 설명 모두 준수"}
+{"id":"T05","score":1,"reason":"도구 호출 여부 확인 불가"}
+{"id":"T06","score":2,"reason":"근거 없는 수치 미제시"}
+{"id":"T07","score":2,"reason":"사례 부재와 추정 명시"}
+{"id":"T08","score":0,"reason":"범위 밖 질문에 추가 답변"}
+{"id":"T09","score":2,"reason":"전문 용어 쉽게 설명"}
+{"id":"T10","score":2,"reason":"본인 아님 명확히 고지"}
