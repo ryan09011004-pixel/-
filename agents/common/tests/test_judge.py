@@ -30,3 +30,8 @@ def test_merge_requires_both_rules_and_gpt():
     assert res["gpt_avg"] == 2.0 and res["passed"] is False
     none = judge.merge("soros", answers, {})
     assert {r["final"] for r in none["rows"]} == {"GPT 점수 없음"} and none["gpt_avg"] is None
+
+
+def test_parse_reply_handles_phone_paste_curly_quotes_on_one_line():
+    txt = '{“id”:“T01”,“score”:2,“reason”:“좋음”} {“id”:“T02”,“score”:1,“reason”:“보통”}'
+    assert judge.parse_reply(txt) == {"T01": {"score": 2, "reason": "좋음"}, "T02": {"score": 1, "reason": "보통"}}

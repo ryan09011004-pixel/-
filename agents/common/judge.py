@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -34,15 +35,15 @@ def build_packet(agent: str, answers: dict[str, str]) -> str:
 
 
 def parse_reply(text: str) -> dict[str, dict]:
+    """GPT 답에서 {"id":..,"score":..} 객체를 모두 찾는다. 폰 복사로 생기는 둥근 따옴표와 한 줄에 여러 개 붙은 경우도 처리."""
+    t = text.replace("“", '"').replace("”", '"').replace("‘", "'").replace("’", "'")
     out = {}
-    for line in text.splitlines():
-        line = line.strip().strip("`")
-        if line.startswith("{") and line.endswith("}"):
-            try:
-                row = json.loads(line)
-                out[row["id"]] = {"score": int(row["score"]), "reason": str(row.get("reason", ""))}
-            except (ValueError, KeyError, TypeError):
-                continue
+    for m in re.finditer(r"\{[^{}]*\}", t):
+        try:
+            row = json.loads(m.group(0))
+            out[row["id"]] = {"score": int(row["score"]), "reason": str(row.get("reason", ""))}
+        except (ValueError, KeyError, TypeError):
+            continue
     return out
 
 
