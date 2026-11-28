@@ -67,6 +67,7 @@ def pe_reference_price(price: float | None, pe: float | None, criteria: list[dic
         "trailing_eps": round(eps, 2),
         "pe_threshold": rule["threshold"],
         "price_at_pe_threshold": round(eps * rule["threshold"], 2),
+        "pe_line_vs_price_pct": round((rule["threshold"] / pe - 1) * 100, 1),  # 기준선이 현재가보다 몇 % 위(+)/아래(-)
         "note": "목표주가가 아닙니다. 후행 이익이 그대로일 때 PER 기준선(프로젝트 기본값)을 통과하는 가격입니다.",
     }
 

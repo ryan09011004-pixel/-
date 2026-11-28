@@ -46,3 +46,10 @@ def test_tools_wiring():
     assert "[G" in search_quotes_impl("margin_of_safety")
     assert "[K01]" in find_similar_cases_impl("시장 씨 변동") and "사례가 있는 것처럼" in find_similar_cases_impl("zzzz qqqq")
     assert "1976" in known_facts_impl() and "미확인" in known_facts_impl()
+
+
+def test_reference_gives_ratio_not_only_price():
+    from graham_agent import checklist as cl
+
+    r = cl.reference(100.0, 4.0, 20.0, None)  # 그레이엄 수 = √(22.5×4×20) ≈ 42.4
+    assert r["graham_number_vs_price_pct"] == -57.6

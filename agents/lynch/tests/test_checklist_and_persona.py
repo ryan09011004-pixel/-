@@ -57,3 +57,10 @@ def test_tools_wiring():
     assert "[L" in search_quotes_impl("no_forecasting")
     assert "[K04]" in find_similar_cases_impl("소비재 생활 속 발견") and "사례가 있는 것처럼" in find_similar_cases_impl("zzzz qqqq")
     assert "1977" in known_facts_impl() and "미확인" in known_facts_impl()
+
+
+def test_reference_gives_ratio_not_only_price():
+    from lynch_agent import checklist as cl
+
+    r = cl.reference(100.0, 4.0, 20.0)  # PEG 1 가격 = 4 × 20 = 80
+    assert r["peg1_vs_price_pct"] == -20.0

@@ -52,7 +52,11 @@ def reference_levels(close: np.ndarray) -> dict[str, float | None]:
     c = np.asarray(close, dtype=float)
     c = c[~np.isnan(c)]
     pick = lambda n: round(float(c[-n:].mean()), 2) if len(c) >= n else None  # noqa: E731
-    return {"last_close": round(float(c[-1]), 2) if len(c) else None, "ma50": pick(50), "ma200": pick(200), "high_3y": round(float(c.max()), 2) if len(c) else None, "low_3y": round(float(c.min()), 2) if len(c) else None}
+    out = {"last_close": round(float(c[-1]), 2) if len(c) else None, "ma50": pick(50), "ma200": pick(200), "high_3y": round(float(c.max()), 2) if len(c) else None, "low_3y": round(float(c.min()), 2) if len(c) else None}
+    last = out["last_close"]
+    for k in ("ma50", "ma200", "high_3y", "low_3y"):  # 각 기준선이 현재가보다 몇 % 위(+)/아래(-) — 답변은 이 비율을 쓴다
+        out[f"{k}_vs_price_pct"] = round((out[k] / last - 1) * 100, 1) if out[k] and last else None
+    return out
 
 
 def classify_stage(m: dict[str, Any], last_close: float | None = None, ma200: float | None = None) -> dict[str, str]:

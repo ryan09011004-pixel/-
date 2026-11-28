@@ -104,5 +104,6 @@ def reference(price: float | None, eps_ttm: float | None, growth: float | None) 
     out: dict[str, Any] = {"price": price, "eps_growth_pct": None if growth is None else round(growth, 1), "growth_used_pct": None if used is None else round(used, 1)}
     ok = eps_ttm is not None and eps_ttm > 0 and used is not None and used > 0
     out["price_at_peg_1"] = round(eps_ttm * used, 2) if ok else None
+    out["peg1_vs_price_pct"] = round((eps_ttm * used / price - 1) * 100, 1) if ok and price else None  # 기준선이 현재가보다 몇 % 위(+)/아래(-)
     out["note"] = f"목표주가가 아닙니다. 후행 주당순이익 x 이익 성장률(%, 최대 {GROWTH_CAP:.0f}%)로 PEG 1이 되는 가격을 역산한 값이며, 성장이 그대로 이어진다는 전제입니다. 기준은 프로젝트 기본값입니다."
     return out

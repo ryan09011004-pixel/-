@@ -89,3 +89,13 @@ def test_out_of_scope_allows_single_refusal_line():
 def test_prompts_have_grading_feedback_rules(agent):
     p = (ROOT / agent / "persona" / "system_prompt.md").read_text(encoding="utf-8")
     assert "표현 규칙 (2026-11-28" in p and "다시 따져 볼 신호" in p and "점검표 기준" in p
+
+
+@pytest.mark.parametrize("agent", AGENTS)
+def test_price_amounts_are_flagged_but_ratios_pass(agent):
+    q, c = ids(agent)
+    ok = good(agent, q, c)
+    assert any("가격 숫자" in p for p in fc.check_answer(agent, ok.replace("숫자 하나가", "약 202달러가")))
+    assert any("가격 숫자" in p for p in fc.check_answer(agent, ok.replace("숫자 하나가", "$150이")))
+    assert fc.check_answer(agent, ok.replace("숫자 하나가", "200일선이 현재가보다 35% 위인 게")) == []
+    assert "현재가 대비 비율(%)로" in (ROOT / agent / "persona" / "system_prompt.md").read_text(encoding="utf-8")

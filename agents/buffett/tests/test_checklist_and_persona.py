@@ -49,3 +49,10 @@ def test_prompt_demands_three_line_conversational_answer():
     p = system_prompt()
     for must in ("정확히 3줄", "들어갈 때(추정)", "멈출 때(추정)", "🎩 **워런버핏** · AI 재현", "PER 기준선에서 역산한"):
         assert must in p
+
+
+def test_reference_gives_ratio_not_only_price():
+    from buffett_agent import checklist as cl
+
+    r = cl.pe_reference_price(100.0, 30.0, cl.load_criteria())
+    assert r["pe_line_vs_price_pct"] == round((r["pe_threshold"] / 30.0 - 1) * 100, 1) and r["pe_line_vs_price_pct"] < 0

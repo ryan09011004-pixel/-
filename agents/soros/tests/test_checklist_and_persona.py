@@ -48,7 +48,7 @@ def test_short_history_returns_unknowns_not_guesses():
 
 def test_reference_levels_are_not_targets():
     lv = cl.reference_levels(_series("flat"))
-    assert set(lv) == {"last_close", "ma50", "ma200", "high_3y", "low_3y"} and lv["ma200"] is not None
+    assert {"last_close", "ma50", "ma200", "high_3y", "low_3y", "ma200_vs_price_pct"} <= set(lv) and lv["ma200"] is not None
 
 
 def test_summarize_counts():
@@ -69,3 +69,8 @@ def test_tools_wiring():
     assert "[K03]" in find_similar_cases_impl("버블 황혼") and "사례가 있는 것처럼" in find_similar_cases_impl("zzzz qqqq")
     f = known_facts_impl()
     assert "1992" in f and "미확인" in f and "비공식" in f
+
+
+def test_reference_levels_include_ratios_to_price():
+    lv = cl.reference_levels(np.concatenate([np.full(200, 100.0), [80.0]]))
+    assert lv["ma200_vs_price_pct"] == round((lv["ma200"] / 80.0 - 1) * 100, 1) and lv["high_3y_vs_price_pct"] == 25.0

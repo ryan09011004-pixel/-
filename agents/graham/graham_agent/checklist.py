@@ -97,6 +97,7 @@ def reference(price: float | None, eps: float | None, bvps: float | None, ncav_p
     out: dict[str, Any] = {
         "price": price,
         "price_at_graham_number": None if gn is None else round(gn, 2),
+        "graham_number_vs_price_pct": None if gn is None or not price else round((gn / price - 1) * 100, 1),  # 기준선이 현재가보다 몇 % 위(+)/아래(-)
         "price_vs_graham_number_pct": None if gn is None or not price else round((price / gn - 1) * 100, 1),
         "ncav_per_share": None if ncav_ps is None else round(ncav_ps, 2),
         "net_net_buy_price": None if ncav_ps is None or ncav_ps <= 0 else round(ncav_ps * 2 / 3, 2),
