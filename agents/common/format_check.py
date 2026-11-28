@@ -20,6 +20,7 @@ HEADERS = {
 MAX_LINE = 220
 ID_RE = re.compile(r"\[([A-Z]\d{2})\]")
 PRICE_RE = re.compile(r"\$\s?\d|\d[\d,.]*\s*(달러|원)")
+REACH_RE = re.compile(r"(되찾|도달|닿으|올라서|넘어서면|돌파)")
 LIST_RE = re.compile(r"^\s*([-*•]|\d+[.)])\s")
 
 
@@ -53,6 +54,9 @@ def check_answer(agent: str, text: str, body_lines: int = 3) -> list[str]:
     full = "\n".join(lines)
     if PRICE_RE.search(full):
         problems.append("가격 숫자(달러·원)가 있습니다(현재가 대비 비율로 써야 함)")
+    for i, l in enumerate(body, 1):
+        if "%" in l and REACH_RE.search(l) and ("선" in l or "가격" in l or "고점" in l or "저점" in l):
+            problems.append(f"{i}번째 줄에 가격 도달 조건이 있습니다(근거 신호로 써야 함)")
     if re.search(r"https?://", full):
         problems.append("링크가 들어 있습니다(원문은 사용자가 요청할 때만)")
     known = registry_ids(agent)
