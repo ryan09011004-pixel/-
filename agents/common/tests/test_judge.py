@@ -7,7 +7,7 @@ from common.format_check import HEADERS  # noqa: E402
 
 
 def ans(agent="soros"):
-    return f"{HEADERS[agent]}\n한 줄(추정).\n두 줄(추정).\n세 줄(추정)."
+    return f"{HEADERS[agent]}\n### 분석\n- 근거 하나예요.\n- 근거 둘이에요.\n### 쉬운 요약\n한 줄(추정).\n두 줄(추정).\n세 줄(추정)."
 
 
 def test_packet_contains_rubric_expect_and_rule_result():
@@ -35,3 +35,9 @@ def test_merge_requires_both_rules_and_gpt():
 def test_parse_reply_handles_phone_paste_curly_quotes_on_one_line():
     txt = '{“id”:“T01”,“score”:2,“reason”:“좋음”} {“id”:“T02”,“score”:1,“reason”:“보통”}'
     assert judge.parse_reply(txt) == {"T01": {"score": 2, "reason": "좋음"}, "T02": {"score": 1, "reason": "보통"}}
+
+
+def test_packet_includes_tool_log():
+    p = judge.build_packet("soros", {"T05": ans()}, {"T05": ["get_soros_checklist('NVDA') -> 과열 신호 0/3"]})
+    assert "[도구 기록] get_soros_checklist('NVDA') -> 과열 신호 0/3" in p
+    assert "[도구 기록] 없음" in judge.build_packet("soros", {"T05": ans()})

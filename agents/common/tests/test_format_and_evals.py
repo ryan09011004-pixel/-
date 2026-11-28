@@ -15,6 +15,10 @@ AGENTS = sorted(fc.HEADERS)
 def good(agent: str, qid: str, cid: str) -> str:
     return (
         f"{fc.HEADERS[agent]}\n"
+        "### 분석\n"
+        f"- 관련 원칙과 사례를 먼저 확인했어요 ({qid}, {cid}).\n"
+        "- 점검표 숫자가 없어 판단 근거가 부족하고, 틀릴 수 있는 조건은 이익 추세가 바뀌는 경우예요.\n"
+        "### 쉬운 요약\n"
         f"지금은 정보가 더 필요해 보여요(추정) ({qid}).\n"
         f"숫자 하나가 기준 안으로 들어오면 살펴볼 만해요(추정) ({cid}).\n"
         "기준을 벗어나면 줄이는 쪽으로 생각해요(추정)."
@@ -40,10 +44,12 @@ def test_bad_answers_are_caught(agent):
     ok = good(agent, q, c)
     lines = ok.splitlines()
     assert any("머리글" in p for p in fc.check_answer(agent, "\n".join(lines[1:])))  # 머리글 없음
+    assert any("쉬운 요약" in p for p in fc.check_answer(agent, "\n".join(l for l in lines if "쉬운 요약" not in l)))
+    assert any("분석" in p for p in fc.check_answer(agent, "\n".join(l for l in lines if l != "### 분석")))
     assert any("3줄" in p for p in fc.check_answer(agent, "\n".join(lines + ["넷째 줄(추정)"])))
     assert any("(추정)" in p for p in fc.check_answer(agent, ok.replace("(추정)", "", 1)))
     assert any("레지스트리" in p for p in fc.check_answer(agent, ok.replace(f"({q})", "([Z99])")))
-    assert any("목록" in p for p in fc.check_answer(agent, "\n".join(lines[:1] + ["- " + lines[1]] + lines[2:])))
+    assert any("목록" in p for p in fc.check_answer(agent, "\n".join(lines[:-1] + ["- " + lines[-1]])))
     assert any("링크" in p for p in fc.check_answer(agent, ok + " https://example.com"))
     assert any("괄호" in p for p in fc.check_answer(agent, ok.replace(f"({q})", f"[{q}]")))
 

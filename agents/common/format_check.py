@@ -33,30 +33,18 @@ def registry_ids(agent: str) -> set[str]:
     return ids
 
 
-def check_answer(agent: str, text: str, body_lines: int = 3) -> list[str]:
-    """문제 목록을 돌려준다. 빈 목록이면 형식 통과. 범위 밖 질문은 body_lines=1(머리글 + 거절 한 줄)."""
-    problems: list[str] = []
-    lines = [l for l in text.strip().splitlines() if l.strip()]
-    if not lines:
-        return ["빈 답변"]
-    if lines[0].strip() != HEADERS[agent]:
-        problems.append(f"첫 줄 머리글이 다릅니다(기대: {HEADERS[agent]})")
-    body = lines[1:]
-    if len(body) != body_lines:
-        problems.append(f"본문이 {len(body)}줄입니다(정확히 {body_lines}줄이어야 함)")
-    for i, l in enumerate(body, 1):
-        if body_lines == 3 and "(추정)" not in l:
-            problems.append(f"{i}번째 줄에 '(추정)' 표시가 없습니다")
-        if len(l) > MAX_LINE:
-            problems.append(f"{i}번째 줄이 너무 깁니다({len(l)}자 > {MAX_LINE})")
-        if LIST_RE.match(l) or l.lstrip().startswith(("#", ">", "|")):
-            problems.append(f"{i}번째 줄에 목록·제목·표 형식이 있습니다")
+SUMMARY_RE = re.compile(r"^#{0,4}\s*\**\s*쉬운 요약\s*\**\s*$")
+ANALYSIS_RE = re.compile(r"^#{0,4}\s*\**\s*분석\s*\**\s*$")
+MAX_ANALYSIS = 12
+
+
+def _common_checks(agent: str, lines: list[str], scan: list[str], problems: list[str]) -> None:
     full = "\n".join(lines)
     if PRICE_RE.search(full):
         problems.append("가격 숫자(달러·원)가 있습니다(현재가 대비 비율로 써야 함)")
-    for i, l in enumerate(body, 1):
+    for l in scan:
         if "%" in l and REACH_RE.search(l) and ("선" in l or "가격" in l or "고점" in l or "저점" in l):
-            problems.append(f"{i}번째 줄에 가격 도달 조건이 있습니다(근거 신호로 써야 함)")
+            problems.append(f"가격 도달 조건이 있습니다(근거 신호로 써야 함): {l[:30]}")
     if re.search(r"https?://", full):
         problems.append("링크가 들어 있습니다(원문은 사용자가 요청할 때만)")
     known = registry_ids(agent)
@@ -66,4 +54,45 @@ def check_answer(agent: str, text: str, body_lines: int = 3) -> list[str]:
         before, after = full[: m.start()], full[m.end():]
         if before.rfind("(") <= before.rfind(")") or after.find(")") == -1 or (after.find("(") != -1 and after.find("(") < after.find(")")):
             problems.append(f"ID [{m.group(1)}]는 괄호 안에만 써야 합니다")
+
+
+def check_answer(agent: str, text: str, body_lines: int = 3) -> list[str]:
+    """문제 목록을 돌려준다. 빈 목록이면 형식 통과.
+
+    기본 구조(2026-11-28 사용자 결정): 머리글 → '### 분석'(정확한 분석, 목록 허용) → 맨 아래 '### 쉬운 요약'(정확히 3줄, 각 줄 (추정)).
+    범위 밖 질문은 body_lines=1: 머리글 + 거절 한 줄만.
+    """
+    problems: list[str] = []
+    lines = [l for l in text.strip().splitlines() if l.strip()]
+    if not lines:
+        return ["빈 답변"]
+    if lines[0].strip() != HEADERS[agent]:
+        problems.append(f"첫 줄 머리글이 다릅니다(기대: {HEADERS[agent]})")
+    if body_lines == 1:
+        body = lines[1:]
+        if len(body) != 1:
+            problems.append(f"본문이 {len(body)}줄입니다(정확히 1줄이어야 함)")
+        _common_checks(agent, lines, body, problems)
+        return problems
+    idx = next((i for i, l in enumerate(lines) if SUMMARY_RE.match(l.strip())), None)
+    if idx is None:
+        problems.append("맨 아래 '### 쉬운 요약' 부분이 없습니다")
+        _common_checks(agent, lines, lines[1:], problems)
+        return problems
+    analysis = [l for l in lines[1:idx] if not ANALYSIS_RE.match(l.strip())]
+    summary = lines[idx + 1:]
+    if not any(ANALYSIS_RE.match(l.strip()) for l in lines[1:idx]):
+        problems.append("'### 분석' 제목이 없습니다")
+    if not 2 <= len(analysis) <= MAX_ANALYSIS:
+        problems.append(f"분석이 {len(analysis)}줄입니다(2~{MAX_ANALYSIS}줄)")
+    if len(summary) != 3:
+        problems.append(f"쉬운 요약이 {len(summary)}줄입니다(정확히 3줄이어야 함)")
+    for i, l in enumerate(summary, 1):
+        if "(추정)" not in l:
+            problems.append(f"요약 {i}번째 줄에 '(추정)' 표시가 없습니다")
+        if len(l) > MAX_LINE:
+            problems.append(f"요약 {i}번째 줄이 너무 깁니다({len(l)}자 > {MAX_LINE})")
+        if LIST_RE.match(l) or l.lstrip().startswith(("#", ">", "|")):
+            problems.append(f"요약 {i}번째 줄에 목록·제목·표 형식이 있습니다")
+    _common_checks(agent, lines, analysis + summary, problems)
     return problems

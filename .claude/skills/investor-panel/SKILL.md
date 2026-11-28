@@ -17,7 +17,12 @@ description: 투자 대가 5인(워런 버핏, 벤저민 그레이엄, 피터 �
    python agents/panel.py evidence <agent|all> "<질문>" --ticker <TICKER> --market
    ```
    필요한 패키지가 없으면 `pip install yfinance pyyaml numpy`(무료) 후 다시 실행한다.
-3. 에이전트마다 system_prompt의 3줄 형식으로 답을 쓴다: 첫 줄 머리글(`header` 값 그대로), 이어서 의견 / 들어갈 때 / 멈출 때 3줄, 각 줄 `(추정)`, ID는 괄호 안에만, 숫자는 근거 JSON에 있는 값만(가격 금액 대신 `..._vs_price_pct` 비율).
+3. 에이전트마다 system_prompt의 **답변 구조**로 쓴다(2026-11-28 사용자 결정):
+   - 첫 줄 머리글(`header` 값 그대로)
+   - `### 분석`: 정확하게. 사용한 도구 이름, 도구 숫자와 출처, 인용·사례 ID, 틀릴 수 있는 조건과 모르는 것(2~12줄, 목록 가능)
+   - 맨 아래 `### 쉬운 요약`: 의견 / 들어갈 때 / 멈출 때 정확히 3줄, 각 줄 `(추정)`, 쉬운 말
+   - 가격 금액·가격 도달 조건 금지, 조건은 근거 신호(실적 추세, 빚, 출렁임 배수, 과열 신호 수)로
+   - 범위 밖 질문은 머리글 + 거절 한 줄만
 4. 답마다 형식 검사:
    ```bash
    python agents/panel.py check <agent> answer.txt      # 범위 밖 거절은 --one-line
@@ -29,4 +34,4 @@ description: 투자 대가 5인(워런 버핏, 벤저민 그레이엄, 피터 �
 `python agents/compare.py <TICKER>`로 다섯 점검표 표를 먼저 만들고, 그 표를 한 줄로 요약한 뒤 각자의 3줄을 붙인다.
 
 ## 채점(선택)
-사용자가 원하면 답을 `answers.jsonl`({"id","answer"})로 모아 `python agents/common/judge.py packet <agent> answers.jsonl`로 GPT 붙여넣기 묶음을 만들고, 돌려받은 결과를 `merge`로 합친다(API 호출 없음).
+사용자가 원하면 답을 `answers.jsonl`({"id","answer"})로 모아 `python agents/common/judge.py packet <agent> answers.jsonl`로(각 줄에 `"tools": ["도구(입력) -> 결과 요약", ...]`을 넣으면 GPT가 도구 사용을 확인할 수 있다) GPT 붙여넣기 묶음을 만들고, 돌려받은 결과를 `merge`로 합친다(API 호출 없음).
